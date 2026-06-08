@@ -1,0 +1,180 @@
+@import "tailwindcss";
+
+html{
+  font-size: 110%;
+}
+/* High-Contrast "Midnight Noir" Theme Styling Overrides */
+.theme-noir {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+/* Ensure no translucent/blurred layers reduce readability in high-contrast mode */
+.theme-noir,
+.theme-noir * {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  text-shadow: none !important;
+}
+
+/* Turn transparent panels/glassmorphism into solid dark charcoal cards with sharp white/gray borders */
+.theme-noir .bg-white\/5,
+.theme-noir .bg-slate-950\/60,
+.theme-noir .bg-slate-900\/65,
+.theme-noir .bg-slate-950\/40,
+.theme-noir .bg-slate-950\/80,
+.theme-noir .bg-slate-950\/50,
+.theme-noir .bg-slate-900\/80,
+.theme-noir .bg-slate-900\/40,
+.theme-noir .bg-slate-900\/55,
+.theme-noir .bg-slate-900\/50,
+.theme-noir .bg-slate-950,
+.theme-noir .bg-slate-900,
+.theme-noir .bg-white\/10,
+.theme-noir .bg-slate-900\/20,
+.theme-noir .bg-slate-950\/30 {
+  background-color: #121212 !important;
+  border-color: #3f3f46 !important; /* solid zinc-700 */
+}
+
+/* Apply strong contrasting borders to clickable items when focused/hovered */
+.theme-noir button,
+.theme-noir select,
+.theme-noir input,
+.theme-noir textarea,
+.theme-noir kbd {
+  background-color: #181c20 !important;
+  border-color: #52525b !important; /* solid zinc-600 */
+  color: #ffffff !important;
+}
+
+.theme-noir button:hover,
+.theme-noir select:hover,
+.theme-noir input:focus,
+.theme-noir textarea:focus {
+  border-color: #2dd4bf !important; /* sharp teal border */
+  background-color: #27272a !important;
+}
+
+/* Ensure secondary text has high luminance and doesn't blend into dark back */
+.theme-noir .text-slate-400,
+.theme-noir .text-slate-500,
+.theme-noir .text-zinc-400,
+.theme-noir .text-zinc-500,
+.theme-noir .text-slate-400\/80 {
+  color: #c8c8cc !important; /* high-visibility gray */
+}
+
+.theme-noir .text-slate-300,
+.theme-noir .text-zinc-300 {
+  color: #f4f4f5 !important; /* near white */
+}
+
+/* Border overrides to elevate visibility on all boundaries */
+.theme-noir .border-white\/10,
+.theme-noir .border-white\/5,
+.theme-noir .border-slate-800,
+.theme-noir .border-slate-700,
+.theme-noir .border-white\/15,
+.theme-noir .border-slate-800\/50 {
+  border-color: #3f3f46 !important;
+}
+
+/* De-colorize soft multi-color gradients into solid deep blacks/grays for high visual contrast list items */
+.theme-noir .from-indigo-400,
+.theme-noir .to-teal-400 {
+  color: #2dd4bf !important; /* Fallback to solid teal high visibility text */
+}
+
+.theme-noir .bg-gradient-to-r,
+.theme-noir .bg-gradient-to-br,
+.theme-noir .bg-gradient-to-tr,
+.theme-noir .bg-gradient-to-b {
+  background-image: none !important;
+  background-color: #18181b !important; /* Zinc-900 solid backdrop */
+}
+
+/* Ensure highlights are solid color-blocks rather than faint glows */
+.theme-noir .bg-teal-500\/10,
+.theme-noir .bg-teal-500\/5,
+.theme-noir .bg-teal-500\/20 {
+  background-color: #0f766e !important; /* rich teal */
+  color: #ffffff !important;
+}
+
+.theme-noir .bg-rose-500\/10,
+.theme-noir .bg-rose-500\/5,
+.theme-noir .bg-rose-500\/20 {
+  background-color: #be123c !important; /* rich rose */
+  color: #ffffff !important;
+}
+
+.theme-noir .bg-amber-500\/10,
+.theme-noir .bg-amber-500\/5,
+.theme-noir .bg-amber-500\/20 {
+  background-color: #b45309 !important; /* rich amber */
+  color: #ffffff !important;
+}
+
+.theme-noir .bg-indigo-500\/10,
+.theme-noir .bg-indigo-500\/5,
+.theme-noir .bg-indigo-500\/20 {
+  background-color: #4338ca !important; /* rich indigo */
+  color: #ffffff !important;
+}
+
+@keyframes loading-bar {
+  0% {
+    left: -35%;
+    width: 35%;
+  }
+  50% {
+    left: 35%;
+    width: 45%;
+  }
+  100% {
+    left: 100%;
+    width: 35%;
+  }
+}
+
+.animate-linear-scan {
+  animation: loading-bar 1.5s infinite ease-in-out;
+}
+
+/* Fluent responsive improvements & smooth scrolling */
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  overflow-x: hidden;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Enable hardware acceleration and rich smooth finger inertia scrolling on mobile devices */
+.overflow-y-auto,
+.overflow-x-auto,
+textarea {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* High-fidelity custom scrollbar handles designed to match modern dark workspace presets */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.01);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(45, 212, 191, 0.15);
+  border-radius: 9999px;
+  transition: background-color 0.2s ease;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(45, 212, 191, 0.35);
+}
