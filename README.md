@@ -318,15 +318,15 @@ from another device connected to the same LAN.
 # Screenshots
 
 - Main dashboard
-    ![[Dashboard.png]]
+    ![Main Dashboard](screenshots/Dashboard.png)
 - Image & File Forensics
-    ![[Image_&_File_Forensics.png]]
+    ![Image & File Forensics](screenshots/Image_&_File_Forensics.png)
 - Cryptographic Hash Engine
-    ![[Cryptographic_Hash_Engine.png]]
+    ![Cryptographic Hash Engine](screenshots/Cryptographic_Hash_Engine.png)
 - Asymmetric Key Utilities
-    ![[Asymmetric_Key_Utilities.png]]
+    ![Asymmetric Key Utilities](screenshots/Asymmetric_Key_Utilities.png)
 - Symmetric Cryptography Manual
-    ![[Symmetric_Cryptography_Manual.png]]
+    ![Symmetric Cryptography Manual](screenshots/Symmetric_Cryptography_Manual.png)
 
 ---
 
