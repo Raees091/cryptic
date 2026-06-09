@@ -201,12 +201,23 @@ Includes:
 
 Cryptic supports:
 
-1. Local Development Runtime
-2. Docker Runtime Execution
+1. Vercel Hosted Deployment
+2. Local Development Runtime
+3. Docker Runtime Execution
 
 ---
 
-# Method 1 — Local Development
+# Method 1 — Use Online via Vercel
+
+Access the live deployed application directly in your browser without installing anything locally.
+
+## Open Application
+
+https://cryptic-roan.vercel.app/
+
+---
+
+# Method 2 — Local Development
 
 ## Clone Repository
 
@@ -253,7 +264,7 @@ dist/
 
 ---
 
-# Method 2 — Docker Runtime
+# Method 3 — Docker Runtime
 
 Docker provides isolated, portable execution without manually installing dependencies.
 
