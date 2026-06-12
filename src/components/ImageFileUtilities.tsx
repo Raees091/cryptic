@@ -33,10 +33,37 @@ const MAGIC_BYTES_DB = [
   { magic: [0x7B, 0x22], ext: 'json', mime: 'application/json', desc: 'RFC 8259 JavaScript Object Notation descriptor payload' }
 ];
 
-export default function ImageFileUtilities() {
+interface ImageFileUtilitiesProps {
+  initialFiles?: File[];
+}
+
+export default function ImageFileUtilities({ initialFiles }: ImageFileUtilitiesProps = {}) {
   const [activeMainTab, setActiveMainTab] = useState<MainTabType>('image');
   const [imageSubTab, setImageSubTab] = useState<ImageSubTabType>('exif');
   const [fileSubTab, setFileSubTab] = useState<FileSubTabType>('mime');
+
+  useEffect(() => {
+    if (initialFiles && initialFiles.length > 0) {
+      const file = initialFiles[0];
+      if (file.type.startsWith('image/')) {
+        setActiveMainTab('image');
+        const ext = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+        if (['.jpg', '.jpeg'].includes(ext)) {
+          setImageSubTab('exif');
+        } else {
+          setImageSubTab('compression');
+        }
+      } else {
+        setActiveMainTab('file_suite');
+        const ext = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+        if (['.zip'].includes(ext)) {
+          setFileSubTab('zip_vault');
+        } else {
+          setFileSubTab('mime');
+        }
+      }
+    }
+  }, [initialFiles]);
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
@@ -87,7 +114,7 @@ export default function ImageFileUtilities() {
               ))}
             </div>
 
-            <ImageSuiteComponent subTab={imageSubTab} />
+            <ImageSuiteComponent subTab={imageSubTab} initialFiles={initialFiles} />
           </motion.div>
         )}
 
@@ -117,7 +144,7 @@ export default function ImageFileUtilities() {
               ))}
             </div>
 
-            <FileSuiteComponent subTab={fileSubTab} />
+            <FileSuiteComponent subTab={fileSubTab} initialFiles={initialFiles} />
           </motion.div>
         )}
       </AnimatePresence>
@@ -128,7 +155,7 @@ export default function ImageFileUtilities() {
 // ============================================================================
 // IMAGE SUITE VIEW MODULE
 // ============================================================================
-function ImageSuiteComponent({ subTab }: { subTab: ImageSubTabType }) {
+function ImageSuiteComponent({ subTab, initialFiles }: { subTab: ImageSubTabType; initialFiles?: File[] }) {
   // EXIF Metadata + Stripper variables
   const [exifFile, setExifFile] = useState<File | null>(null);
   const [exifImgSrc, setExifImgSrc] = useState<string>('');
@@ -457,6 +484,22 @@ function ImageSuiteComponent({ subTab }: { subTab: ImageSubTabType }) {
     };
     reader.readAsDataURL(file);
   };
+
+  // Load initial files from detection
+  useEffect(() => {
+    if (initialFiles && initialFiles.length > 0) {
+      const file = initialFiles[0];
+      if (file.type.startsWith('image/')) {
+        if (subTab === 'exif') {
+          parseExifData(file);
+        } else if (subTab === 'compression') {
+          processImageCompression(file);
+        } else if (subTab === 'qr') {
+          parseQRUploadFile(file);
+        }
+      }
+    }
+  }, [initialFiles, subTab]);
 
   const startCameraScanner = async () => {
     setQrScanResult(null);
@@ -949,7 +992,7 @@ function ImageSuiteComponent({ subTab }: { subTab: ImageSubTabType }) {
 // ============================================================================
 // FILE SUITE VIEW MODULE
 // ============================================================================
-function FileSuiteComponent({ subTab }: { subTab: FileSubTabType }) {
+function FileSuiteComponent({ subTab, initialFiles }: { subTab: FileSubTabType; initialFiles?: File[] }) {
   // MIME variables
   const [mimeFile, setMimeFile] = useState<File | null>(null);
   const [magicHex, setMagicHex] = useState('');
@@ -1083,6 +1126,33 @@ function FileSuiteComponent({ subTab }: { subTab: FileSubTabType }) {
     setComputedHash('');
     setExpectedHashInput('');
   };
+
+  // Process initial files automatically
+  useEffect(() => {
+    if (initialFiles && initialFiles.length > 0) {
+      const file = initialFiles[0];
+      if (subTab === 'mime') {
+        parseTrueMime(file);
+      } else if (subTab === 'checksum') {
+        calculateFileChecksum(file, checkType);
+      } else if (subTab === 'shredder') {
+        setShredFile(file);
+        setShredState('idle');
+      } else if (subTab === 'zip_vault') {
+        if (vaultAction === 'compose') {
+          setZipFilesList(initialFiles);
+        } else {
+          const ext = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+          if (ext === '.zip') {
+            setVaultAction('extract');
+            setVaultExtractFile(file);
+          } else {
+            setZipFilesList(initialFiles);
+          }
+        }
+      }
+    }
+  }, [initialFiles, subTab, checkType, vaultAction]);
 
   // -------------------------------------------------------------
   // C. SECURE FILE SHREDDER DOT GRADED SIMULATOR

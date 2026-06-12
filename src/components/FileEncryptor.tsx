@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   FileText, Lock, Unlock, Download, UploadCloud, Eye, EyeOff, ShieldAlert, CheckCircle2, 
@@ -16,7 +16,11 @@ import {
   stringToBytes, bytesToString 
 } from '../utils/crypto';
 
-export default function FileEncryptor() {
+interface FileEncryptorProps {
+  initialFiles?: File[];
+}
+
+export default function FileEncryptor({ initialFiles }: FileEncryptorProps = {}) {
   const [activeTab, setActiveTab] = useState<'encrypt' | 'decrypt'>('encrypt');
 
   // Encryption state
@@ -46,6 +50,34 @@ export default function FileEncryptor() {
 
   const encFileRef = useRef<HTMLInputElement>(null);
   const decFileRef = useRef<HTMLInputElement>(null);
+
+  // Parse initial files when passed from active detection
+  useEffect(() => {
+    if (initialFiles && initialFiles.length > 0) {
+      const file = initialFiles[0];
+      const ext = file.name.includes('.') ? file.name.split('.').pop()?.toLowerCase() || '' : '';
+      if (['enc', 'aes'].includes(ext)) {
+        setActiveTab('decrypt');
+        setDecryptFile(file);
+        setDecryptionError(null);
+        setDecryptedPayload(null);
+      } else {
+        setActiveTab('encrypt');
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const text = event.target?.result as string || '';
+          setDraggedFile({
+            name: file.name,
+            size: file.size,
+            content: text
+          });
+          setRawText(text);
+          setEncSuccess(false);
+        };
+        reader.readAsText(file);
+      }
+    }
+  }, [initialFiles]);
 
   // Parse text files on drop/select
   const handleFileSelectForEncryption = (e: React.ChangeEvent<HTMLInputElement>) => {

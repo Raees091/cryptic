@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import JSZip from 'jszip';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -12,7 +12,11 @@ import {
 } from 'lucide-react';
 import { encryptAESGCM, decryptAESGCM, bytesToBase64 } from '../utils/crypto';
 
-export default function ImagePackager() {
+interface ImagePackagerProps {
+  initialFiles?: File[];
+}
+
+export default function ImagePackager({ initialFiles }: ImagePackagerProps = {}) {
   const [activeMode, setActiveMode] = useState<'wrap' | 'unwrap'>('wrap');
 
   // Wrap State
@@ -44,6 +48,27 @@ export default function ImagePackager() {
 
   const wrapInputRef = useRef<HTMLInputElement>(null);
   const unwrapInputRef = useRef<HTMLInputElement>(null);
+
+  // Load initial files from detection
+  useEffect(() => {
+    if (initialFiles && initialFiles.length > 0) {
+      const file = initialFiles[0];
+      const ext = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+      if (['.zip', '.enc', '.aes'].includes(ext)) {
+        setActiveMode('unwrap');
+        setSelectedEncryptedFile(file);
+        setDecryptionError(null);
+        setUnwrappedImage(null);
+      } else if (file.type.startsWith('image/')) {
+        setActiveMode('wrap');
+        setSelectedImage(file);
+        setImagePreviewUrl(URL.createObjectURL(file));
+        setPackSuccess(false);
+        const baseName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+        setZipFileName(`secure_${baseName.replace(/\s+/g, '_')}`);
+      }
+    }
+  }, [initialFiles]);
 
   // Handle image selection
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {

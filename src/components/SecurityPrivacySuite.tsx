@@ -74,9 +74,24 @@ const SECURITY_HEADERS: HeaderCheck[] = [
   }
 ];
 
-export default function SecurityPrivacySuite() {
+interface SecurityPrivacySuiteProps {
+  initialFiles?: File[];
+}
+
+export default function SecurityPrivacySuite({ initialFiles }: SecurityPrivacySuiteProps = {}) {
   const [activeTab, setActiveTab] = useState<ActiveSubTab>('testing');
   const [airGappedMode, setAirGappedMode] = useState<boolean>(false);
+
+  // Set default tab on load if certificate file is loaded
+  useEffect(() => {
+    if (initialFiles && initialFiles.length > 0) {
+      const file = initialFiles[0];
+      const ext = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+      if (['.pem', '.crt', '.key', '.der', '.pub'].includes(ext)) {
+        setActiveTab('testing');
+      }
+    }
+  }, [initialFiles]);
 
   // Read URL Hash for pastebin decryption
   useEffect(() => {
@@ -136,7 +151,7 @@ export default function SecurityPrivacySuite() {
             exit={{ opacity: 0, y: -10 }}
             className="space-y-6"
           >
-            <SecurityTestingTab airGapped={airGappedMode} />
+            <SecurityTestingTab airGapped={airGappedMode} initialFiles={initialFiles} />
           </motion.div>
         ) : (
           <motion.div
@@ -157,8 +172,18 @@ export default function SecurityPrivacySuite() {
 // ============================================================================
 // SECURITY TESTING SUBTAB
 // ============================================================================
-function SecurityTestingTab({ airGapped }: { airGapped: boolean }) {
+function SecurityTestingTab({ airGapped, initialFiles }: { airGapped: boolean; initialFiles?: File[] }) {
   const [subSection, setSubSection] = useState<'password' | 'headers' | 'ssl'>('password');
+
+  useEffect(() => {
+    if (initialFiles && initialFiles.length > 0) {
+      const file = initialFiles[0];
+      const ext = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+      if (['.pem', '.crt', '.key', '.der', '.pub'].includes(ext)) {
+        setSubSection('ssl');
+      }
+    }
+  }, [initialFiles]);
 
   return (
     <div className="space-y-6">
@@ -186,7 +211,7 @@ function SecurityTestingTab({ airGapped }: { airGapped: boolean }) {
       <AnimatePresence mode="wait">
         {subSection === 'password' && <PasswordAuditComponent airGapped={airGapped} />}
         {subSection === 'headers' && <HeaderAnalyzerComponent />}
-        {subSection === 'ssl' && <SslPEMDecoderComponent />}
+        {subSection === 'ssl' && <SslPEMDecoderComponent initialFiles={initialFiles} />}
       </AnimatePresence>
     </div>
   );
@@ -688,7 +713,7 @@ function HeaderAnalyzerComponent() {
 // -------------------------------------------------------------
 // Component A3: PEM SSL/TLS Certificate X509 Parser
 // -------------------------------------------------------------
-function SslPEMDecoderComponent() {
+function SslPEMDecoderComponent({ initialFiles }: { initialFiles?: File[] } = {}) {
   const [pemText, setPemText] = useState('');
   const [decoded, setDecoded] = useState(false);
   const [certInfo, setCertInfo] = useState<{
@@ -763,6 +788,7 @@ function SslPEMDecoderComponent() {
       const expiryDate = new Date('2030-05-26T23:59:59Z');
       const isExpired = now > expiryDate;
 
+
       setCertInfo({
         subject: subjectCN,
         issuer: issuerCN,
@@ -777,6 +803,26 @@ function SslPEMDecoderComponent() {
       setParseError(`Signature read panic: Invalid base64 sequence in certificate payload. ${err.message}`);
     }
   };
+
+  // Load initial files from detection
+  useEffect(() => {
+    if (initialFiles && initialFiles.length > 0) {
+      const file = initialFiles[0];
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const text = e.target?.result as string || '';
+        setPemText(text);
+      };
+      reader.readAsText(file);
+    }
+  }, [initialFiles]);
+
+  // Decode automatically if pemText includes the certificate demarcators
+  useEffect(() => {
+    if (pemText && pemText.includes('-----BEGIN CERTIFICATE-----')) {
+      runPemDecoder();
+    }
+  }, [pemText]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 font-sans">

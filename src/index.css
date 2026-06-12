@@ -1,8 +1,5 @@
 @import "tailwindcss";
 
-html{
-  font-size: 110%;
-}
 /* High-Contrast "Midnight Noir" Theme Styling Overrides */
 .theme-noir {
   background-color: #000000 !important;

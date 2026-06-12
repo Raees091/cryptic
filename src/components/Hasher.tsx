@@ -14,7 +14,11 @@ import { computeMD5, computeArgon2Hash } from '../utils/cryptoHelpers';
 
 type HashTab = 'text' | 'file' | 'compare';
 
-export default function Hasher() {
+interface HasherProps {
+  initialFiles?: File[];
+}
+
+export default function Hasher({ initialFiles }: HasherProps = {}) {
   const [activeTab, setActiveTab] = useState<HashTab>('text');
   
   // Text Hasher State
@@ -165,6 +169,16 @@ export default function Hasher() {
       processFileChecksums(file);
     }
   };
+
+  // Load initial files from detection
+  useEffect(() => {
+    if (initialFiles && initialFiles.length > 0) {
+      const file = initialFiles[0];
+      setActiveTab('file');
+      setFileToHash(file);
+      processFileChecksums(file);
+    }
+  }, [initialFiles]);
 
   // Compare Hashes triggering
   useEffect(() => {

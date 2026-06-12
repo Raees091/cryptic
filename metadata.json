@@ -1,5 +1,6 @@
 {
-  "name": "Cryptography & File Encryption Suite",
+  "name": "Cryptic",
   "description": "Secure, client-side encryption tools for password-based file security, image zip packaging with passphrases, and symmetric cryptographic utilities.",
+  "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

@@ -139,6 +139,7 @@ export default function App() {
   // File drag & drop states
   const [isDragging, setIsDragging] = useState(false);
   const [detectedFile, setDetectedFile] = useState<DetectedFile | null>(null);
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [isFileProcessing, setIsFileProcessing] = useState(false);
 
   const tools: ToolItem[] = [
@@ -255,6 +256,7 @@ export default function App() {
 
   const handleBackToGrid = () => {
     setActiveView('grid');
+    setUploadedFiles([]);
     // Clear hash parameters if returning
     if (window.location.hash.includes('paste_gcm')) {
       window.location.hash = '';
@@ -276,11 +278,12 @@ export default function App() {
 
     setIsFileProcessing(true);
     setDetectedFile(null);
+    const fileList = Array.from(files);
+    setUploadedFiles(fileList);
 
     // Simulate inspection delay to show beautiful feedback and improve perceived performance
     setTimeout(() => {
       try {
-        const fileList = Array.from(files);
         const fileCount = fileList.length;
 
         // Sum size of all files
@@ -741,15 +744,15 @@ export default function App() {
                 </button>
 
                 {/* Render active tool */}
-                {activeView === 'package' && <ImagePackager />}
-                {activeView === 'file_aes' && <FileEncryptor />}
+                {activeView === 'package' && <ImagePackager initialFiles={uploadedFiles} />}
+                {activeView === 'file_aes' && <FileEncryptor initialFiles={uploadedFiles} />}
                 {activeView === 'vault' && <SecureVault />}
-                {activeView === 'hashing' && <Hasher />}
+                {activeView === 'hashing' && <Hasher initialFiles={uploadedFiles} />}
                 {activeView === 'keys' && <KeyUtils />}
                 {activeView === 'encoding' && <EncoderDecoder />}
                 {activeView === 'dev_utils' && <DevUtilities />}
-                {activeView === 'image_file_utils' && <ImageFileUtilities />}
-                {activeView === 'security_privacy_suite_view' && <SecurityPrivacySuite />}
+                {activeView === 'image_file_utils' && <ImageFileUtilities initialFiles={uploadedFiles} />}
+                {activeView === 'security_privacy_suite_view' && <SecurityPrivacySuite initialFiles={uploadedFiles} />}
                 {activeView === 'learn' && <CryptoWiki />}
               </motion.div>
             )}
